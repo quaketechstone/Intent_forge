@@ -58,5 +58,8 @@ python3 -m http.server 8000
 
 ## 部署
 
-`.github/workflows/pages.yml` 在 `main` 分支 push 时把仓库根发布为 GitHub Pages。
-首次使用需在 Settings → Pages → Source 选择 **GitHub Actions**。
+GitHub Pages 使用 **Deploy from a branch**：分支 `main`、目录 `/ (root)`。
+根目录的 `.nojekyll` 让 Pages 原样发布文件，不经过 Jekyll 处理（否则 `runtime/` 下的
+部分路径会被改写）。
+
+`main` 每次 push 后由 GitHub 自动重建，通常 30–60 秒生效。
