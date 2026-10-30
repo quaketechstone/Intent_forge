@@ -1,0 +1,224 @@
+{
+  "schema": "intent-bus-test-real-driver-intake/v1",
+  "receivedAt": "2026-10-29T22:36:37.798Z",
+  "source": {
+    "repo": "quakeai (母体仓)",
+    "forge": "Driver-forge",
+    "releaseFile": "Driver-forge/driver/RELEASE.json",
+    "projectFile": "Driver-forge/driver/driver.json",
+    "packageDir": "Driver-forge/driver/dist/org-quake-webrtc-im",
+    "upstream": "gitlab.com/tbraover/zsjws@3b57750",
+    "upstreamPolicy": "zsjws 仓库只读，一个字节未改；所有适配都在本仓 driver/ 内完成"
+  },
+  "package": {
+    "id": "org.quake.webrtc.im",
+    "version": "1.2.0",
+    "name": "WebRTC 即时沟通",
+    "entry": "index.js",
+    "format": "esm-blob",
+    "entryPath": "dist/index.js",
+    "entryBytes": 224408,
+    "entrySha256": "85239648184ced42b1c2ca107a3703a03bc76a8f51b19b64a4be60676ede5d4d",
+    "contentHash": "ce675e87670af4247f56bb2e50c1b193aea17eb0260790a2f2f1b29911ba1168",
+    "files": [
+      {
+        "path": "dist/index.js",
+        "bytes": 224408,
+        "sha256": "85239648184ced42b1c2ca107a3703a03bc76a8f51b19b64a4be60676ede5d4d"
+      },
+      {
+        "path": "evidence/self-test.json",
+        "bytes": 248,
+        "sha256": "11f0eeeaf2411d8d61680603d2d9c7dd97dbd6160704d23bd555badc5ab2b5ac"
+      },
+      {
+        "path": "manifest.json",
+        "bytes": 1003,
+        "sha256": "24df0acb3804681c7addc60e311129f249b0d7c0d9bb1704878a601c0da50713"
+      }
+    ]
+  },
+  "manifest": {
+    "capabilities": [
+      "log",
+      "kv:skills",
+      "http:quakeai.tech"
+    ],
+    "deps": {},
+    "slots": [
+      "chat.sidebar"
+    ],
+    "minHost": "0.11.19",
+    "ui": {
+      "mode": "optional",
+      "mountStrategy": "user-action"
+    },
+    "bus": null,
+    "knownBehaviors": [
+      {
+        "what": "连接建立前发送消息会失败",
+        "detail": "数据通道未 open 时引擎返回 E_NOT_READY，气泡显示 ⚠，输入框不回填。zsjws 原有语义，未改动。"
+      },
+      {
+        "what": "握手耗时 4–9 秒",
+        "detail": "取决于 TURN 分配与 peer-joined 下发时机；服务端偶发漏发 peer-joined 时会停在「正在建立连接」，驱动侧未做重试。"
+      },
+      {
+        "what": "语音通话时控制条在屏幕顶部",
+        "detail": "zsjws 原样：接通后 #callBanner 隐藏，.video 是 space-between，流内只剩 .controls。已在线上 zsjws 实测复现同一布局，非适配引入。"
+      }
+    ],
+    "deviation": {
+      "kind": "out-of-catalog",
+      "what": "WebSocket",
+      "where": [
+        "src/engine/signaling/client.js",
+        "src/engine/roster/index.js"
+      ],
+      "why": "母体能力目录无 ws: 项；声明目录外能力会在 authorize 阶段整包拒载。zsjws 的信令与房间通道都是 WebSocket，去掉业务即不可用。",
+      "how": "不写进 capabilities，代码内直接 new WebSocket 直连，每处调用点标注 // capability: ws:<backend>",
+      "mitigation": "母体侧 CSP 已放行 wss://quakeai.tech；README「能力与越界」有完整记录",
+      "remediation": "母体补上 ws: 能力项后，改为声明式并走 ctx.ws"
+    }
+  },
+  "runtime": {
+    "productionImport": "blob-url ESM import（web/src/loader）",
+    "testImport": "node: file URL import；browser: blob URL import（与生产同形）",
+    "hostContext": [
+      "id",
+      "log",
+      "kv",
+      "http",
+      "onDispose",
+      "hostVersion",
+      "form",
+      "slots",
+      "bus"
+    ]
+  },
+  "baseline": {
+    "busCommit": "8177c8c1649b6e4718b13e68effcaffcd4824762",
+    "sdkVersion": "0.4.0"
+  },
+  "checks": [
+    {
+      "id": "id.match",
+      "ok": true,
+      "severity": "hard",
+      "detail": "manifest=org.quake.webrtc.im project=org.quake.webrtc.im release=org.quake.webrtc.im"
+    },
+    {
+      "id": "version.match",
+      "ok": true,
+      "severity": "hard",
+      "detail": "manifest=1.2.0 project=1.2.0 release=1.2.0"
+    },
+    {
+      "id": "entry.declared",
+      "ok": true,
+      "severity": "hard",
+      "detail": "entry=index.js artifact.entry=index.js"
+    },
+    {
+      "id": "sha256.manifest",
+      "ok": true,
+      "severity": "hard",
+      "detail": "actual=85239648184ced42 manifest=85239648184ced42"
+    },
+    {
+      "id": "sha256.release",
+      "ok": true,
+      "severity": "hard",
+      "detail": "actual=85239648184ced42 release=85239648184ced42"
+    },
+    {
+      "id": "size.release",
+      "ok": true,
+      "severity": "hard",
+      "detail": "actual=219.1KB release=219.1KB"
+    },
+    {
+      "id": "bundle.no-bare-import",
+      "ok": true,
+      "severity": "hard",
+      "detail": "none"
+    },
+    {
+      "id": "bundle.no-dynamic-import",
+      "ok": true,
+      "severity": "hard",
+      "detail": "count=0"
+    },
+    {
+      "id": "bundle.no-default-export",
+      "ok": true,
+      "severity": "hard",
+      "detail": "none"
+    },
+    {
+      "id": "bundle.export:mount",
+      "ok": true,
+      "severity": "hard",
+      "detail": "named=mount,unmount,describe"
+    },
+    {
+      "id": "bundle.export:unmount",
+      "ok": true,
+      "severity": "hard",
+      "detail": "named=mount,unmount,describe"
+    },
+    {
+      "id": "deps.empty",
+      "ok": true,
+      "severity": "hard",
+      "detail": "{}"
+    },
+    {
+      "id": "capabilities.declared",
+      "ok": true,
+      "severity": "hard",
+      "detail": "log,kv:skills,http:quakeai.tech"
+    },
+    {
+      "id": "slots.declared",
+      "ok": true,
+      "severity": "hard",
+      "detail": "chat.sidebar"
+    },
+    {
+      "id": "bus.declaration",
+      "ok": false,
+      "severity": "info",
+      "detail": "manifest.bus 缺失：驱动未申请任何总线权限"
+    },
+    {
+      "id": "bus.usage",
+      "ok": true,
+      "severity": "info",
+      "detail": "refs=10"
+    },
+    {
+      "id": "release.hygiene",
+      "ok": false,
+      "severity": "warn",
+      "detail": "存在其它版本产物：[{\"path\":\"Driver-forge/dist/webrtc-im\",\"version\":\"0.7.0\",\"sha256\":\"3f4de549b4c9859c\"}]"
+    },
+    {
+      "id": "runtime.esm",
+      "ok": true,
+      "severity": "hard",
+      "detail": "ESM named exports"
+    },
+    {
+      "id": "runtime.headless-path",
+      "ok": true,
+      "severity": "hard",
+      "detail": "产物包含 headless 分支（无槽位时不渲染 DOM）"
+    }
+  ],
+  "verdict": "PASS_WITH_WARNINGS",
+  "blocking": [],
+  "warnings": [
+    "release.hygiene"
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "org.quake.webrtc.im",
+  "version": "1.2.0",
+  "name": "WebRTC 即时沟通",
+  "capabilities": [
+    "log",
+    "kv:skills",
+    "http:quakeai.tech"
+  ],
+  "deps": {},
+  "slots": [
+    "chat.sidebar"
+  ],
+  "min_host": "0.11.19",
+  "ui": {
+    "mode": "optional",
+    "mountStrategy": "user-action"
+  },
+  "data": {
+    "on_unload": "retain"
+  },
+  "_note": "能力源 zsjws@3b57750。capabilities 只声明实际用到的：log（日志）、kv:skills（身份与访客历史持久化）、http:quakeai.tech（建房与 ICE，Schema 要求不带协议头，母体归一化为 https://quakeai.tech）。WebSocket 不在母体能力目录内，按受控越界直连，代码内有标注，README 有记录。",
+  "_source": "gitlab.com/tbraover/zsjws@3b57750 :: driver/src + ui.js + css",
+  "entry": "index.js",
+  "artifact": {
+    "path": "dist/index.js",
+    "format": "esm-blob",
+    "entry": "index.js"
+  },
+  "sha256": "85239648184ced42b1c2ca107a3703a03bc76a8f51b19b64a4be60676ede5d4d"
+}

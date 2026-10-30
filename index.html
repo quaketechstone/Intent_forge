@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Intent Bus Test Lab</title>
+    <link rel="stylesheet" href="./lab.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Intent Bus Test Lab <span class="ver" data-sdk-version>v0.4.0</span></h1>
+      <p>真实总线 · 人机测试 · 故障注入 · 证据导出</p>
+          <p class="deploy-meta">
+        部署版本 <code>0.4.0</code> · 总线提交 <code>c87dbaa</code>
+        · 构建 2026-10-30 19:17:46Z · 真实总线，非 mock
+      </p>
+    </header>
+
+    <section class="controls">
+      <button id="run-all">Run all scenarios</button>
+      <select id="scenario"></select>
+      <button id="run-one">Run selected</button>
+      <button id="inject-fault">Inject timeout fault</button>
+      <button id="export">Export evidence</button>
+      <span id="status">loading…</span>
+    </section>
+
+    <section id="summary" class="summary"></section>
+
+    <section class="panel">
+      <h2>Results</h2>
+      <div id="results"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Message trace（真实总线审计）</h2>
+      <div id="trace"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Fault injection</h2>
+      <pre id="fault-result">(none)</pre>
+    </section>
+
+    <section class="panel" id="rd-panel">
+      <h2>真实驱动（锻造器交付 · 经正式 SDK 接入冻结总线）</h2>
+      <div class="controls">
+        <button id="rd-init">重新取件</button>
+        <button id="rd-load">装载</button>
+        <button id="rd-unload">卸载</button>
+        <button id="rd-probe">发一条请求（看请求/响应）</button>
+        <select id="rd-grants">
+          <option value="default">授权：构造场景注入 / 其余走真实规则</option>
+          <option value="strict">授权：严格（全部走真实规则）</option>
+        </select>
+        <label>deadline(ms) <input id="rd-deadline" type="number" value="500" min="100" step="50" /></label>
+        <span id="rd-status">未取件</span>
+      </div>
+      <div id="rd-meta"></div>
+
+      <div class="controls">
+        <select id="rd-scenario"></select>
+        <button id="rd-run-one">执行选中场景</button>
+        <button id="rd-step">逐步执行下一条</button>
+        <button id="rd-run-all">执行全部场景</button>
+        <button id="rd-export">导出证据包</button>
+      </div>
+      <div id="rd-scenarios"></div>
+      <div id="rd-results"></div>
+      <h3>场景明细（断言 / 装载记录 / 卸载记录）</h3>
+      <div id="rd-detail"></div>
+      <h3>请求与响应</h3>
+      <pre id="rd-probe-out">(none)</pre>
+      <h3>驱动日志</h3>
+      <pre id="rd-log"></pre>
+      <h3>审计轨迹（当前会话 · 真实总线）</h3>
+      <div id="rd-trace"></div>
+    </section>
+
+    <section class="panel" id="fatal-panel" hidden>
+      <h2>启动失败（诊断）</h2>
+      <pre id="fatal"></pre>
+    </section>
+
+    <!--
+      早期错误兜底：真机（尤其 iOS Safari）没有控制台可看，一旦模块加载/解析失败，
+      页面只会永远停在 "loading…"。这段内联脚本在任何模块之前执行，把错误与运行环境
+      直接写到页面上，供截图/复制。它不依赖任何外部资源。
+    -->
+    <script>
+      (function () {
+        function show(where, err) {
+          var panel = document.getElementById('fatal-panel')
+          var box = document.getElementById('fatal')
+          if (panel) panel.hidden = false
+          if (!box) return
+          var text = err && err.stack ? err.stack : String(err)
+          box.textContent += '[' + where + '] ' + text + '\n'
+          var st = document.getElementById('status')
+          if (st) {
+            st.textContent = 'FAILED (' + where + ')'
+            st.classList.add('fatal')
+          }
+        }
+        window.addEventListener(
+          'error',
+          function (e) {
+            if (e && e.target && e.target.tagName === 'SCRIPT') {
+              show('script-load', e.target.src)
+            } else {
+              show('error', (e && (e.error || e.message)) || 'unknown')
+            }
+          },
+          true,
+        )
+        window.addEventListener('unhandledrejection', function (e) {
+          show('unhandledrejection', e && e.reason)
+        })
+        // 8s 后仍未就绪：把 UA 与能力自检写出来（真机排障的唯一线索）
+        setTimeout(function () {
+          var st = document.getElementById('status')
+          if (!st || st.textContent.indexOf('loading') !== 0) return
+          var probe = {
+            ua: navigator.userAgent,
+            module: typeof HTMLScriptElement.supports === 'function'
+              ? HTMLScriptElement.supports('module')
+              : 'unknown',
+            randomUUID: typeof (crypto && crypto.randomUUID) === 'function',
+            indexedDB: typeof indexedDB !== 'undefined',
+            hasLab: typeof window.__lab !== 'undefined',
+          }
+          show('timeout-8s', JSON.stringify(probe, null, 2))
+        }, 8000)
+      })()
+    </script>
+
+    <script type="module" src="./runtime/lab/lab.js"></script>
+  </body>
+</html>

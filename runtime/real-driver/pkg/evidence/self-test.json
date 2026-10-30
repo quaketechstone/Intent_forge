@@ -1,0 +1,9 @@
+{
+  "kind": "driver-contract-test",
+  "at": "2026-10-29T22:01:17.609Z",
+  "node": "v22.13.1",
+  "exitCode": 0,
+  "pass": 18,
+  "fail": 0,
+  "note": "由 testkit 风格的模拟 ctx 驱动，不触网、不起浏览器；不代表母体验收。"
+}
