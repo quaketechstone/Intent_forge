@@ -2,8 +2,8 @@
   "module": "intent-bus/test-sdk",
   "subdir": "intent-bus-test-sdk",
   "sdkVersion": "0.4.0",
-  "busCommit": "c87dbaa",
-  "builtAt": "2026-10-30T19:17:46.649Z",
+  "busCommit": "df2d8f4",
+  "builtAt": "2026-10-31T07:06:14.294Z",
   "entry": "index.html",
   "note": "真实总线（非 mock）；G-1/G-2/G-3/G-5 未解除，融合准入仍为 BLOCKED"
 }
